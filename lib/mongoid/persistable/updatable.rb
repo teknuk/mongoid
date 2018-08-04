@@ -53,6 +53,8 @@ module Mongoid
       end
       alias :update_attributes :update
 
+      attr_reader :last_update_result
+
       # Update the document attributes in the database and raise an error if
       # validation failed.
       #
@@ -141,7 +143,7 @@ module Mongoid
           unless updates.empty?
             coll = _root.collection
             selector = atomic_selector
-            coll.find(selector).update_one(positionally(selector, updates))
+            @last_update_result = coll.find(selector).update_one(positionally(selector, updates))
             conflicts.each_pair do |key, value|
               coll.find(selector).update_one(positionally(selector, { key => value }))
             end
